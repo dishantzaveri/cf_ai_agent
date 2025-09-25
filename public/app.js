@@ -7,6 +7,7 @@ const micBtn = document.querySelector("#mic");
 const clearBtn = document.querySelector("#clear");
 const userId = "dishant"; // could be a UUID per session
 
+
 function addMsg(role, text, ts = Date.now()) {
   const div = document.createElement("div");
   div.className = `msg ${role}`;
@@ -31,20 +32,39 @@ async function loadHistory() {
   messages.forEach(m => addMsg(m.role, m.text, m.ts));
 }
 
+let ws;
+let backoff = 500;
+
+
 function connectWS() {
   const proto = location.protocol === "https:" ? "wss" : "ws";
-  const ws = new WebSocket(`${proto}://${location.host}/ws`);
-  ws.onopen = () => console.log("WS connected");
+  ws = new WebSocket(`${proto}://${location.host}/ws`);
+
+  ws.onopen = () => {
+    console.log("WS connected");
+    backoff = 500; // reset backoff on success
+  };
+
   ws.onmessage = (evt) => {
     try {
       const data = JSON.parse(evt.data);
       if (data.type === "assistant_message") addMsg("assistant", data.text);
     } catch {}
   };
-  ws.onclose = () => console.log("WS closed");
-  return ws;
+
+  ws.onclose = () => {
+    console.warn("WS closed; reconnecting…");
+    setTimeout(connectWS, backoff);
+    backoff = Math.min(backoff * 2, 8000);
+  };
+
+  ws.onerror = (e) => {
+    console.warn("WS error", e);
+    ws.close();
+  };
 }
-const ws = connectWS();
+
+connectWS();
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -52,13 +72,18 @@ form.addEventListener("submit", async (e) => {
   if (!text) return;
   input.value = "";
   addMsg("user", text);
-  // try WS (faster), fallback to HTTP
-  try { ws.send(JSON.stringify({ type: "chat", userId, text })); }
-  catch {
-    await fetch("/api/chat", { method:"POST", headers:{ "content-type":"application/json" }, body: JSON.stringify({ userId, prompt: text }) })
-      .then(r => r.json()).then(({ reply }) => addMsg("assistant", reply));
+
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: "chat", userId, text }));
+  } else {
+    await fetch("/api/chat", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ userId, prompt: text }),
+    }).then(r => r.json()).then(({ reply }) => addMsg("assistant", reply));
   }
 });
+
 
 followBtn.addEventListener("click", async () => {
   await fetch("/api/schedule", { method:"POST", headers:{ "content-type":"application/json" }, body: JSON.stringify({ userId, seconds:30, note:"CF background research" })});

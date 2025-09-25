@@ -40,7 +40,8 @@ export class MyAgent implements DurableObject {
         } catch {}
       });
 
-      // ✅ ResponseInit.webSocket expects WebSocket | null (not undefined)
+
+      //  ResponseInit.webSocket expects WebSocket | null (not undefined)
       return new Response(null, { status: 101, webSocket: client });
     }
 
@@ -49,6 +50,12 @@ export class MyAgent implements DurableObject {
       const reply = await this.chat(body.userId || "anon", body.prompt);
       return json({ reply });
     }
+
+    if (url.pathname === "/clear" && req.method === "POST") {
+      await this.state.storage.deleteAll();
+      return new Response(JSON.stringify({ cleared: true }), { headers: { "content-type": "application/json" } });
+    }
+
 
     if (url.pathname === "/history") {
       const messages = (await this.state.storage.get<Msg[]>(MESSAGES_KEY)) ?? [];

@@ -15,14 +15,17 @@ export default {
 
     // in src/index.ts, before forwarding /ws
     if (url.pathname === "/ws") {
-      if (req.headers.get("upgrade")?.toLowerCase() !== "websocket") {
-        return new Response("Expected a WebSocket upgrade", { status: 426 });
-      }
+      // Must be a real WebSocket upgrade from the browser
+      const isWs = req.headers.get("upgrade")?.toLowerCase() === "websocket";
+      if (!isWs) return new Response("Expected a WebSocket upgrade", { status: 426 });
+
       const id = env.MyAgent.idFromName("primary");
       const stub = env.MyAgent.get(id);
-      return stub.fetch("https://do/ws", req); // pass through original request
-    }
 
+      // Forward the ORIGINAL request + headers to the DO, preserving Upgrade
+      const doReq = new Request("https://do/ws", req);
+      return stub.fetch(doReq);
+    }
 
     if (url.pathname === "/api/chat" && req.method === "POST")
       return stub.fetch("https://do/chat", { method: "POST", body: await req.text(), headers: { "content-type": "application/json" } });
@@ -53,6 +56,13 @@ export default {
 
     if (url.pathname === "/api/note" && req.method === "POST")
       return stub.fetch("https://do/note", { method: "POST", body: await req.text(), headers: { "content-type": "application/json" } });
+
+
+    if (url.pathname === "/api/clear" && req.method === "POST") {
+      const id = env.MyAgent.idFromName("primary");
+      const stub = env.MyAgent.get(id);
+      return stub.fetch("https://do/clear", { method: "POST" });
+    }
 
     // fall back to static assets
     return new Response(await (await fetch(new URL("./public/index.html", import.meta.url))).text(), {
