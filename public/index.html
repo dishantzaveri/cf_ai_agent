@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Cloudflare Agent Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/styles.css" />
+</head>
+
+<body>
+    <div class="app">
+        <header>
+            <h1>Cloudflare Agent</h1>
+            <div class="actions">
+                <button id="followup" title="Schedules a follow-up in 10s">Schedule 10s Follow-up</button>
+                <button id="clear" title="Clear chat (local only)">Clear</button>
+            </div>
+        </header>
+
+        <main id="chat" aria-live="polite"></main>
+
+        <form id="composer" autocomplete="off">
+            <input id="prompt" type="text" placeholder="Type a message…" />
+            <button type="submit" id="send">Send</button>
+        </form>
+    </div>
+
+    <script src="/app.js" type="module"></script>
+</body>
+
+</html>
