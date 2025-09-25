@@ -1,0 +1,17 @@
+name = "cf-agents-cf4242"
+main = "src/index.ts"
+compatibility_date = "2025-09-24"
+
+[ai]
+binding = "AI"
+remote = true
+
+[[durable_objects.bindings]]
+name = "MyAgent"
+class_name = "MyAgent"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["MyAgent"]
+
+

@@ -1,0 +1,24 @@
+{
+  "name": "cf-agents-cf4242",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "echo \"(add tests later)\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "agents": "^0.2.1",
+    "cross-fetch": "^4.1.0",
+    "wrangler": "^4.39.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250924.0",
+    "esbuild": "^0.25.10",
+    "typescript": "^5.9.2"
+  }
+}
