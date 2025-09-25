@@ -1,24 +1,30 @@
 name = "cf-agents-cf4242"
 main = "src/index.ts"
 compatibility_date = "2025-09-23"
-
+account_id = "c2e2d197f9b85f61e1981fec59d4eda0"
 workers_dev = true
 
-# Serve the UI in /public
 [assets]
 directory = "public"
 
-# Workers AI binding
 [ai]
 binding = "AI"
 remote = true
 
-# Durable Object binding (name must match the exported class)
 [[durable_objects.bindings]]
 name = "MyAgent"
 class_name = "MyAgent"
 
-# IMPORTANT: use new_sqlite_classes for free plan
+# Migration history must include the first time you created the DO:
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["MyAgent"]
+
+# (optional future tag; leave empty)
+[[migrations]]
+tag = "v2"
+
+# Vectorize
+[[vectorize]]
+binding    = "MEM_INDEX"
+index_name = "mem-index"

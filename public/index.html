@@ -3,25 +3,27 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Cloudflare Agent Chat</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cloudflare Agent Chat • Dishant</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <link rel="stylesheet" href="/styles.css" />
 </head>
 
 <body>
     <div class="app">
         <header>
-            <h1>Cloudflare Agent</h1>
+            <h1>Cloudflare Agent • Dishant</h1>
             <div class="actions">
-                <button id="followup" title="Schedules a follow-up in 10s">Schedule 10s Follow-up</button>
-                <button id="clear" title="Clear chat (local only)">Clear</button>
+                <button id="followup">Schedule 30s Research</button>
+                <button id="mic">🎙️ Voice</button>
+                <button id="clear">Clear</button>
             </div>
         </header>
 
+        <section id="context"></section>
         <main id="chat" aria-live="polite"></main>
 
         <form id="composer" autocomplete="off">
-            <input id="prompt" type="text" placeholder="Type a message…" />
+            <input id="prompt" placeholder="Type a message…  (try: /note … or /search https://blog.cloudflare.com/ )" />
             <button type="submit" id="send">Send</button>
         </form>
     </div>

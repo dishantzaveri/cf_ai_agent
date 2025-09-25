@@ -11,6 +11,11 @@
     "types": [
       "@cloudflare/workers-types"
     ],
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
+    "noEmit": true,
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],
