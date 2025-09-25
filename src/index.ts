@@ -13,7 +13,16 @@ export default {
     const id = env.MyAgent.idFromName("primary");
     const stub = env.MyAgent.get(id);
 
-    if (url.pathname === "/ws") return stub.fetch("https://do/ws");
+    // in src/index.ts, before forwarding /ws
+    if (url.pathname === "/ws") {
+      if (req.headers.get("upgrade")?.toLowerCase() !== "websocket") {
+        return new Response("Expected a WebSocket upgrade", { status: 426 });
+      }
+      const id = env.MyAgent.idFromName("primary");
+      const stub = env.MyAgent.get(id);
+      return stub.fetch("https://do/ws", req); // pass through original request
+    }
+
 
     if (url.pathname === "/api/chat" && req.method === "POST")
       return stub.fetch("https://do/chat", { method: "POST", body: await req.text(), headers: { "content-type": "application/json" } });

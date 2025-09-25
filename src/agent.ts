@@ -68,8 +68,9 @@ export class MyAgent implements DurableObject {
     if (url.pathname === "/note" && req.method === "POST") {
       const { userId = "anon", text } = (await req.json()) as { userId?: string; text: string };
       const res = await upsertNote(this.env, userId, text);
-      return json(res); // { saved: "...", vectorized: boolean }
+      return new Response(JSON.stringify(res), { headers: { "content-type": "application/json" } });
     }
+
 
 
     return new Response("OK");
