@@ -1,95 +1,131 @@
-# cf_ai_agents_do_chat
+# cf_ai_agent — Cloudflare AI Agent Demo
 
-🚀 **Dishant Zaveri’s Cloudflare AI Agent Project**  
-Built for the Cloudflare AI optional assignment and to showcase my engineering skills for the **Software Engineer Intern (Winter/Spring 2026)** role.
-
----
-
-## 👋 About Me
-
-Hi! I’m **Dishant Zaveri**, a Master’s in Computer Science student at **Texas A&M University** (graduating May 2026).  
-- 🌟 **8 published research papers** in machine learning, NLP, and quantitative analysis  
-- 🏆 Hackathon champion (Singapore–India International Hackathon, Smart India Hackathon, UNESCO India–Africa, +15 more)  
-- 🥇 LinkedIn Top Voice in Machine Learning (top 2% globally) with 10k+ followers  
-- 💡 Passionate about **AI, distributed systems, and building at Internet scale**  
-- 📍 Applying for **Cloudflare Software Engineer Intern (Winter/Spring 2026, Austin)**
-
-This repo doubles as my **assignment submission** *and* a **portfolio project** that reflects the kind of impactful, production-ready systems I’d love to build at Cloudflare.
+This repository contains **Dishant Zaveri’s Cloudflare AI Agent project**, built as part of the **optional assignment** for the **Cloudflare Software Engineer Internship (Winter/Spring 2026)**.  
+It showcases how to build a **full-stack AI-powered application** entirely on Cloudflare’s developer platform.
 
 ---
 
-## 📖 Project Overview
+## 🌟 Features
 
-This project demonstrates how to build an **AI-powered agent** entirely on the **Cloudflare platform**:
-
-- **LLM**: Uses **Workers AI** (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`) for reasoning and conversation.  
-- **Memory / State**:  
-  - **Durable Objects** store recent conversation history.  
-  - **Vectorize** index (`mem-index`, 768 dims) provides *long-term semantic memory*.  
-- **Workflow**: Scheduled background tasks (alarms) that can run research jobs and auto-insert notes.  
-- **User Input**:  
-  - Interactive **web UI** (chat box, chips, history) served via Pages/Workers assets.  
-  - **Realtime WebSocket** streaming of assistant replies.  
-  - **Voice input** (Web Speech API in browser).  
-- **Tools**: Simple “/search” command integrates with a safe fetcher to pull content (e.g., Cloudflare blog).  
-
----
-
-## 🖼️ Demo UI
-
-- `/` → opens chat interface  
-- Features:  
-  - 📝 Type prompts  
-  - 🎙️ Voice input (speech → text)  
-  - 📌 Save notes to long-term memory (`/note …`)  
-  - 🔎 Run research (`/search <url>`)  
-  - ⏰ Schedule background jobs (auto “follow-up” messages after N seconds)  
-  - 🧠 Shows context chips retrieved from Vectorize memory  
+- **LLM Integration**: Uses **Workers AI** with **Llama 3.3 Instruct** for reasoning and conversation.  
+- **Durable Objects**: Provides persistent chat sessions, scheduling (alarms), and multi-user state.  
+- **Vectorize**: Adds semantic memory (768-dim embeddings with `@cf/baai/bge-base-en-v1.5`) so the agent can “remember” facts about you.  
+- **Realtime Communication**: WebSockets keep the chat UI live and responsive.  
+- **Modern UI**: Custom Pages frontend with tabs (About, Project, Agent, Contact). Includes:
+  - Chat interface with auto-scrolling conversation history
+  - Preset chips for quick prompts
+  - Note saving (`/note`)
+  - Search tool (`/search <url>`)
+  - Voice input (Web Speech API)
+  - Clear chat button
+- **Optional Assignment Ready**: Demonstrates all required components:
+  - LLM (Workers AI)
+  - Workflow/coordination (Durable Objects + alarms)
+  - User input (chat + voice)
+  - Memory/state (Durable Object storage + Vectorize)
 
 ---
 
-## 🔧 Tech Stack
+## 🚀 Live Demo
 
-- **Cloudflare Workers** (TypeScript)  
-- **Durable Objects** for state & coordination  
-- **Workers AI** (Llama 3.3, BAAI BGE embeddings)  
-- **Vectorize V2** for semantic memory (cosine similarity, 768 dims)  
-- **Workflows (alarms)** for scheduled jobs  
-- **Pages assets** for static frontend (HTML, CSS, JS)  
+👉 [https://cf-agents-cf4242.dishantzaveri.workers.dev](https://cf-agents-cf4242.dishantzaveri.workers.dev)
+
+Open the demo, click **Talk to my Agent**, and start chatting!  
+Examples:
+- “Introduce yourself in one sentence.”  
+- “/note Dishant has 8 published research papers.”  
+- “What do you remember about me?”  
+- “/search https://blog.cloudflare.com/”  
 
 ---
 
+## 📂 Project Structure
+
+```
+cf_ai_agent/
+├── public/             # Frontend UI (Pages assets)
+│   ├── index.html
+│   ├── styles.css
+│   └── app.js
+├── src/                # Cloudflare Worker & Durable Object
+│   ├── index.ts        # Routes: /api/chat, /api/note, /api/schedule, /api/history, /api/clear, /ws
+│   ├── agent.ts        # Durable Object logic (state, memory, scheduling)
+│   └── rag.ts          # Vectorize (embedding + retrieval)
+├── wrangler.toml       # Worker configuration
+├── README.md           # Project documentation
+└── PROMPTS.md          # AI prompts used during development
+```
 
 ---
 
-## 🚀 Run Locally
+## 🛠️ Running Locally
 
-```bash
-npm install
-npx wrangler dev --local
+1. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-wrangler deploy
+2. **Start local dev server**
+   ```bash
+   wrangler dev --local
+   ```
 
+   Visit [http://localhost:8787](http://localhost:8787).
 
-Live URL (workers.dev):
-👉 https://cf-agents-cf4242.dishantzaveri.workers.dev
+3. **Deploy to Cloudflare**
+   ```bash
+   wrangler deploy
+   ```
 
-API Endpoints
+   Ensure you have:
+   - A **Durable Object** migration (`MyAgent`)
+   - A **Vectorize index** created:
+     ```bash
+     npx wrangler vectorize create mem-index --dimensions=768 --metric=cosine
+     ```
 
-POST /api/chat
-Body: { "userId": "dishant", "prompt": "Hello" }
-→ { "reply": "Hi there!" }
+---
 
-GET /api/history
-→ { "messages": [...] }
+## 📖 API Endpoints
 
-POST /api/note
-Body: { "userId": "dishant", "text": "Save this memory" }
-→ { "saved": "...", "vectorized": true }
+- **POST `/api/chat`** – Chat with the agent  
+  ```json
+  { "userId": "dishant", "prompt": "Say hi" }
+  ```
 
-POST /api/schedule
-Body: { "seconds": 10, "note": "Follow-up!" }
-→ { "scheduled": true }
+- **POST `/api/note`** – Save a note into memory  
+  ```json
+  { "userId": "dishant", "text": "Dishant won the Singapore–India Hackathon" }
+  ```
 
-WS /ws
-Send { "type": "chat", "userId": "dishant", "text": "Hi" } → receives assistant messages in realtime.
+- **POST `/api/schedule`** – Schedule a reminder  
+  ```json
+  { "userId": "dishant", "seconds": 30, "note": "Follow-up reminder" }
+  ```
+
+- **GET `/api/history`** – Get conversation history  
+
+- **POST `/api/clear`** – Clear all history/memory  
+
+- **WS `/ws`** – Real-time WebSocket chat  
+
+---
+
+## 🧑‍💻 Author
+
+**Dishant Zaveri**  
+- Master’s in Computer Science @ Texas A&M University (graduating May 2026)  
+- 8 published research papers (ML/Systems)  
+- 15+ international hackathon wins (including Singapore–India Hackathon)  
+- Ex-Jefferies Technical Associate (backend + microservices)  
+
+📧 [zaveridishant@gmail.com](mailto:zaveridishant@gmail.com) |  
+💼 [LinkedIn](https://www.linkedin.com/in/dishant-zaveri) |  
+🖥️ [GitHub](https://github.com/dishantzaveri)
+
+---
+
+## 🙌 Notes
+
+- Built fully on **Cloudflare’s developer platform** as part of the **internship application assignment**.  
+- Shows enthusiasm for Cloudflare’s mission to build a better Internet — combining curiosity, engineering rigor, and design sense.  
