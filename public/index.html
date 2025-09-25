@@ -3,32 +3,153 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Cloudflare Agent Chat • Dishant</title>
+    <title>Dishant Zaveri • Cloudflare Agent & Portfolio</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description"
+        content="Dishant Zaveri — Software Engineer Intern applicant. Cloudflare-native AI Agent with Durable Objects, Vectorize, Workers AI." />
+    <link rel="icon" href="/favicon.ico" />
     <link rel="stylesheet" href="/styles.css" />
 </head>
 
 <body>
-    <div class="app">
-        <header>
-            <h1>Cloudflare Agent • Dishant</h1>
-            <div class="actions">
-                <button id="followup">Schedule 30s Research</button>
-                <button id="mic">🎙️ Voice</button>
-                <button id="clear">Clear</button>
+    <div class="page">
+        <nav class="topnav">
+            <div class="brand">
+                <!-- Use .jpg by default; if missing, the onerror hides the <img> -->
+                <img id="avatar" src="/profile.jpeg" alt="Dishant" onerror="this.style.display='none'">
+                <span>Dishant Zaveri</span>
             </div>
-        </header>
+            <div class="tabs" role="tablist" aria-label="Sections">
+                <a class="tab active" data-tab="about" href="#about" aria-selected="true">About</a>
+                <a class="tab" data-tab="project" href="#project" aria-selected="false">Project</a>
+                <a class="tab" data-tab="agent" href="#agent" aria-selected="false">Agent</a>
+                <a class="tab" data-tab="contact" href="#contact" aria-selected="false">Contact</a>
+            </div>
+        </nav>
 
-        <section id="context"></section>
-        <main id="chat" aria-live="polite"></main>
+        <!-- ABOUT -->
+        <section id="about" class="panel active" role="region" aria-labelledby="About">
+            <header class="hero">
+                <h1>Hi, I’m Dishant — I build AI & systems for the open Internet.</h1>
+                <p class="sub">MS CS @ Texas A&amp;M (3.8 GPA) • 8 research papers • 15+ international hackathon wins •
+                    ex-Jefferies backend</p>
+                <div class="cta-row">
+                    <!-- This link is what you click; it must be #agent -->
+                    <a class="btn primary" href="#agent" id="ctaAgent">Talk to my Agent</a>
+                    <a class="btn" href="https://github.com/dishantzaveri" target="_blank" rel="noreferrer">GitHub</a>
+                    <a class="btn" href="mailto:zaveridishant@gmail.com">Email Me</a>
+                </div>
+            </header>
 
-        <form id="composer" autocomplete="off">
-            <input id="prompt" placeholder="Type a message…  (try: /note … or /search https://blog.cloudflare.com/ )" />
-            <button type="submit" id="send">Send</button>
-        </form>
+            <div class="cards">
+                <div class="card">
+                    <h3>What I love</h3>
+                    <p>Building reliable, fast products at Internet scale. Systems, AI/ML, and delightful UX.</p>
+                </div>
+                <div class="card">
+                    <h3>Why Cloudflare</h3>
+                    <p>Workers, Durable Objects, Vectorize, and real-time infra let small teams ship big.</p>
+                </div>
+                <div class="card">
+                    <h3>Fun fact</h3>
+                    <p>I built this entire site + agent on Cloudflare to apply for your internship. 😄</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROJECT -->
+        <section id="project" class="panel" role="region" aria-labelledby="Project">
+            <h2>Cloudflare AI Agent — Assignment</h2>
+            <p>
+                This project combines <strong>Workers AI (Llama 3.3)</strong> for reasoning,
+                <strong>Durable Objects</strong> for chat state,
+                <strong>Vectorize</strong> for long-term semantic memory, and a
+                <strong>Realtime</strong> UI with WebSocket + voice input.
+            </p>
+            <div class="stats">
+                <div><span>LLM</span> Llama 3.3 (Workers AI)</div>
+                <div><span>Workflow</span> DO alarms (scheduled follow-ups)</div>
+                <div><span>Memory</span> DO storage + Vectorize (768-dim)</div>
+                <div><span>UI</span> Pages assets, WS, voice</div>
+            </div>
+            <div class="cta-row">
+                <a class="btn primary" href="#agent">Open Agent</a>
+                <a class="btn" target="_blank" rel="noreferrer"
+                    href="https://cf-agents-cf4242.dishantzaveri.workers.dev/">Live Demo</a>
+                <a class="btn" target="_blank" rel="noreferrer" href="https://github.com/dishantzaveri">Source Repo</a>
+            </div>
+            <div class="callout">
+                <p><strong>Tip:</strong> Try <code>/note I won the Singapore–India Hackathon</code>, then ask “What do
+                    you remember about me?”</p>
+            </div>
+        </section>
+
+        <!-- AGENT -->
+        <section id="agent" class="panel" role="region" aria-labelledby="Agent">
+            <div class="agent-layout">
+                <aside class="side">
+                    <h3>Agent Controls</h3>
+                    <div class="control">
+                        <label for="userId">Session userId</label>
+                        <input id="userId" value="dishant" />
+                    </div>
+                    <div class="control">
+                        <label>Quick Actions</label>
+                        <div class="grid-actions">
+                            <button id="saveNote" class="btn small">Save /note</button>
+                            <button id="runSearch" class="btn small">Run /search</button>
+                            <button id="schedule" class="btn small">Schedule 30s</button>
+                            <button id="clear" class="btn small alt">Clear Chat</button>
+                        </div>
+                    </div>
+                    <div class="control">
+                        <label>Context Chips (recent memory)</label>
+                        <div id="context" class="chips"></div>
+                    </div>
+                    <div class="control">
+                        <label>Test Prompts</label>
+                        <div class="chips selectable" id="presets">
+                            <span class="chip">Introduce yourself in one sentence.</span>
+                            <span class="chip">Write a haiku about Cloudflare Agents.</span>
+                            <span class="chip">What do you remember about my work?</span>
+                            <span class="chip">Summarize my key achievements.</span>
+                        </div>
+                    </div>
+                </aside>
+
+                <main class="chat">
+                    <div class="chat-header">
+                        <h3>Chat</h3>
+                        <div class="chat-tools">
+                            <button id="mic" title="Voice input" class="btn small">🎙️</button>
+                        </div>
+                    </div>
+
+                    <div id="chat" class="thread" aria-live="polite"></div>
+
+                    <form id="composer" class="composer" autocomplete="off">
+                        <input id="prompt"
+                            placeholder="Type a message… (tip: /note … or /search https://blog.cloudflare.com/)" />
+                        <button id="send" class="btn primary" type="submit">Send</button>
+                    </form>
+                </main>
+            </div>
+        </section>
+
+        <!-- CONTACT -->
+        <section id="contact" class="panel" role="region" aria-labelledby="Contact">
+            <h2>Let’s build something great.</h2>
+            <p>Available for the <strong>Software Engineer Intern (Winter/Spring 2026, Austin)</strong> role.</p>
+            <div class="cta-row">
+                <a class="btn primary" href="mailto:zaveridishant@gmail.com">Email Dishant</a>
+                <a class="btn" target="_blank" rel="noreferrer" href="/DishantZaveriResume.pdf">View Resume</a>
+                <a class="btn" target="_blank" rel="noreferrer"
+                    href="https://www.linkedin.com/in/dishant-zaveri">LinkedIn</a>
+            </div>
+        </section>
     </div>
 
-    <script src="/app.js" type="module"></script>
+    <script type="module" src="/app.js"></script>
 </body>
 
 </html>
