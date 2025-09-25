@@ -13,12 +13,12 @@
   "description": "",
   "dependencies": {
     "agents": "^0.2.1",
-    "cross-fetch": "^4.1.0",
-    "wrangler": "^4.39.0"
+    "cross-fetch": "^4.1.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250924.0",
     "esbuild": "^0.25.10",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "wrangler": "^4.40.0"
   }
 }

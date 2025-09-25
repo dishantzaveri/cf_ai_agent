@@ -45,5 +45,5 @@ export default {
   },
 };
 
-// ✅ Export the Durable Object class from the entrypoint so Wrangler can bind it
+// Export the Durable Object class from the entrypoint so Wrangler can bind it
 export { MyAgent };

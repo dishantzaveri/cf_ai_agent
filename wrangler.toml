@@ -1,17 +1,24 @@
 name = "cf-agents-cf4242"
 main = "src/index.ts"
-compatibility_date = "2025-09-24"
+compatibility_date = "2025-09-23"
 
+workers_dev = true
+
+# Serve the UI in /public
+[assets]
+directory = "public"
+
+# Workers AI binding
 [ai]
 binding = "AI"
 remote = true
 
+# Durable Object binding (name must match the exported class)
 [[durable_objects.bindings]]
 name = "MyAgent"
 class_name = "MyAgent"
 
+# IMPORTANT: use new_sqlite_classes for free plan
 [[migrations]]
 tag = "v1"
-new_classes = ["MyAgent"]
-
-
+new_sqlite_classes = ["MyAgent"]
